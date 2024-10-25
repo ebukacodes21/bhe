@@ -19,7 +19,7 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_PASSWORD: user
+          POSTGRES_USER: user
           POSTGRES_PASSWORD: rocketman1
           POSTGRES_DB: bhe
         options: >-
