@@ -16,4 +16,4 @@ down:
 test:
 	go test -v -cover ./...
 
-.PHONY: generate init up down test
+.PHONY: start generate init up down test
