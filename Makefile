@@ -15,4 +15,7 @@ up:
 down:
 	docker run -it --rm --network host --volume ./db:/db migrate/migrate:v4.17.0 -path=/db/migrations -database "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" down
 
-.PHONY: generate init up down
+test:
+	go test -v -cover ./...
+
+.PHONY: generate init up down test
