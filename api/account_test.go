@@ -43,7 +43,7 @@ func TestGetAccount(t *testing.T) {
 			},
 		},
 		{
-			name:      "Not Found",
+			name:      "NotFound",
 			accountId: account.ID,
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
@@ -57,7 +57,7 @@ func TestGetAccount(t *testing.T) {
 			},
 		},
 		{
-			name:      "Internal Error",
+			name:      "InternalError",
 			accountId: account.ID,
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
@@ -71,7 +71,7 @@ func TestGetAccount(t *testing.T) {
 			},
 		},
 		{
-			name:      "Invalid Id",
+			name:      "InvalidId",
 			accountId: 0,
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
