@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bhe/helper"
 	"database/sql"
 	"log"
 	"os"
@@ -9,17 +10,16 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://user:rocketman1@localhost:5432/bhe?sslmode=disable"
-)
-
 var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
 	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := helper.LoadConfig("../..")
+	if err != nil {
+		log.Fatal(err)
+	}
+	testDB, err = sql.Open(config.DBDriver, config.DBSource)
 
 	if err != nil {
 		log.Fatal(err)

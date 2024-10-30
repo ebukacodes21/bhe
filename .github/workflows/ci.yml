@@ -41,7 +41,7 @@ jobs:
       id: go
     
     # checkout code of repo into the runner using existing action
-    - name: Check out code code into the Go module directory
+    - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
     - name: Run DB Migrations

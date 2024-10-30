@@ -20,4 +20,10 @@ up_ci:
 test:
 	go test -v -cover ./...
 
-.PHONY: start generate init up down test up_ci
+server:
+	go run main.go
+
+mock:
+	mockgen -package mockdb -destination db/mock/repository.go bhe/db/sqlc Repository
+
+.PHONY: start generate init up down test up_ci server mock

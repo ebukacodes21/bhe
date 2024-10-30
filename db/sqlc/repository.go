@@ -5,17 +5,23 @@ import (
 	"database/sql"
 )
 
+// contract to be implemented by both mock and real db
+type Repository interface {
+	Querier
+	TransferFunds(ctx context.Context, args TransferFundsParams) (TransferFundsResult, error)
+}
+
 // use to run db queries and transactions
-type Repository struct {
+type SQLRepository struct {
 	*Queries
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db, Queries: New(db)}
+func NewRepository(db *sql.DB) Repository {
+	return &SQLRepository{db: db, Queries: New(db)}
 }
 
-func (s *Repository) execTx(ctx context.Context, fn func(tx *Queries) error) error {
+func (s *SQLRepository) execTx(ctx context.Context, fn func(tx *Queries) error) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -48,7 +54,7 @@ type TransferFundsResult struct {
 }
 
 // transaction
-func (s *Repository) TransferFunds(ctx context.Context, args TransferFundsParams) (TransferFundsResult, error) {
+func (s *SQLRepository) TransferFunds(ctx context.Context, args TransferFundsParams) (TransferFundsResult, error) {
 	var result TransferFundsResult
 
 	err := s.execTx(ctx, func(q *Queries) error {
