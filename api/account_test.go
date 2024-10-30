@@ -4,6 +4,7 @@ import (
 	mockdb "bhe/db/mock"
 	db "bhe/db/sqlc"
 	"bhe/helper"
+	"bhe/token"
 	"bytes"
 	"database/sql"
 	"encoding/json"
@@ -19,17 +20,22 @@ import (
 )
 
 func TestGetAccount(t *testing.T) {
-	account := randomAccount()
+	user, _ := randomUser(t)
+	account := randomAccount(user.Username)
 
 	cases := []struct {
 		name       string
 		accountId  int64
+		setupAuth  func(t *testing.T, request *http.Request, tokenMaker token.TokenMaker)
 		buildStubs func(mock *mockdb.MockRepository)
 		checkRes   func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:      "OK",
 			accountId: account.ID,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.TokenMaker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
 				repository.EXPECT().
@@ -45,6 +51,9 @@ func TestGetAccount(t *testing.T) {
 		{
 			name:      "NotFound",
 			accountId: account.ID,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.TokenMaker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
 				repository.EXPECT().
@@ -59,6 +68,9 @@ func TestGetAccount(t *testing.T) {
 		{
 			name:      "InternalError",
 			accountId: account.ID,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.TokenMaker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
 				repository.EXPECT().
@@ -73,6 +85,9 @@ func TestGetAccount(t *testing.T) {
 		{
 			name:      "InvalidId",
 			accountId: 0,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.TokenMaker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(repository *mockdb.MockRepository) {
 				// build a stub
 				repository.EXPECT().
@@ -108,6 +123,7 @@ func TestGetAccount(t *testing.T) {
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
+			c.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			c.checkRes(t, recorder)
 		})
@@ -115,10 +131,10 @@ func TestGetAccount(t *testing.T) {
 	}
 }
 
-func randomAccount() db.Account {
+func randomAccount(owner string) db.Account {
 	return db.Account{
 		ID:       helper.RandomInt(1, 1000),
-		Owner:    helper.RandomOwner(),
+		Owner:    owner,
 		Balance:  helper.RandomAmount(),
 		Currency: helper.RandomCurrency(),
 	}
