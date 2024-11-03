@@ -44,8 +44,10 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
+    # run database migrations
     - name: Run DB Migrations
       run: make up_ci
 
+    # run code tests
     - name: Test
       run: make test

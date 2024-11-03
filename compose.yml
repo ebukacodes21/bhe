@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: bhe
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: rocketman1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: rocketman1
+    ports:
+      - "8080:80"  
+    depends_on:
+      - db
+
+  bhe:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_SOURCE=postgresql://user:rocketman1@db:5432/bhe?sslmode=disable
+
+  migrate:
+    image: migrate/migrate:v4.17.0
+    depends_on:
+      - db
+    entrypoint: ["sh", "-c", "until nc -z db 5432; do echo 'Waiting for database...'; sleep 2; done; migrate -path=/db/migrations -database=postgresql://user:rocketman1@db:5432/bhe?sslmode=disable -verbose up"]
+    environment:
+      DB_SOURCE: postgresql://user:rocketman1@db:5432/bhe?sslmode=disable
+    volumes:
+      - ./db:/db
+
+
+volumes:
+  postgres_data:

@@ -19,8 +19,10 @@ jobs:
     # steps
     steps:
     # checkout code of repo into the runner using existing action
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v3
+
+    
 
     # configure aws creds
     - name: Configure AWS credentials
