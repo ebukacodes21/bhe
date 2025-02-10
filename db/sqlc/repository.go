@@ -17,7 +17,7 @@ type SQLRepository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) Repository {
+func NewSQLRepository(db *sql.DB) Repository {
 	return &SQLRepository{db: db, Queries: New(db)}
 }
 
