@@ -21,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	repository := db.NewRepository(conn)
+	repository := db.NewSQLRepository(conn)
 	server, err := api.NewServer(config, repository)
 	if err != nil {
 		log.Fatal("cannot create server", err)

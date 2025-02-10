@@ -9,7 +9,7 @@ import (
 )
 
 func TestTransferFunds(t *testing.T) {
-	store := NewRepository(testDB)
+	store := NewSQLRepository(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
@@ -115,7 +115,7 @@ func TestTransferFunds(t *testing.T) {
 }
 
 func TestTransferDeadlock(t *testing.T) {
-	store := NewRepository(testDB)
+	store := NewSQLRepository(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
